@@ -1,7 +1,9 @@
 import { Context, Next } from "koa";
+import userService from "../service/user.service";
 class UserController {
   async create(ctx: Context, next: Next) {
-    ctx.name = "";
+    const res = await userService.createUser();
+    ctx.body = res;
   }
 }
 

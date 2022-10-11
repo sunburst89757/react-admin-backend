@@ -3,12 +3,12 @@ import "koa";
 export type ErrorRes = {
   code: number;
   success?: boolean;
-  message: string;
+  message?: string;
 };
 export type SuccessRes = {
   code?: number;
   success?: boolean;
-  message: string;
+  message?: string;
   data: any;
 };
 declare module "koa" {

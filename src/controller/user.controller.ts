@@ -1,12 +1,16 @@
 import { Context, Next } from "koa";
 import userService from "../service/user.service";
+import { HttpStatus } from "../types/httpStatus";
 class UserController {
   async create(ctx: Context, next: Next) {
     const res = await userService.createUser();
-    ctx.onSuccess({
-      data: res,
-      message: "创建成功",
+    ctx.onError({
+      code: HttpStatus.FORBIDDEN,
     });
+    // ctx.onSuccess({
+    //   data: res,
+    //   code: HttpStatus.OK,
+    // });
   }
 }
 

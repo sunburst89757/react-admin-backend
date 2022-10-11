@@ -1,24 +1,25 @@
 import { Context, Next } from "koa";
 import { ErrorRes, SuccessRes } from "../shims.koa";
+import { HttpStatus } from "../types/httpStatus";
 export const responseFormat = (ctx: Context, next: Next) => {
   ctx.onSuccess = ({
     data,
-    message,
     code = 200,
+    message,
     success = true,
   }: SuccessRes) => {
     ctx.body = {
       code,
       success,
       data,
-      message,
+      message: message || HttpStatus[code],
     };
   };
-  ctx.onError = ({ message, code, success = false }: ErrorRes) => {
+  ctx.onError = ({ code, message, success = false }: ErrorRes) => {
     ctx.body = {
       code,
       success,
-      message,
+      message: message || HttpStatus[code],
     };
   };
   next();

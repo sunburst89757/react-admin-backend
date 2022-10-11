@@ -1,6 +1,6 @@
 import { Context, Next } from "koa";
 import { ErrorRes, SuccessRes } from "../shims.koa";
-export const returnHandle = (ctx: Context, next: Next) => {
+export const responseFormat = (ctx: Context, next: Next) => {
   ctx.onSuccess = ({
     data,
     message,

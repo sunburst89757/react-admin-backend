@@ -4,6 +4,7 @@
 
 - 集成 [prisma](https://www.prisma.io/) 对 ts 类型支持友好的数据库 ORM 支持 MYSQL/PostgreSQL/SQLite/MongoDB 等
 - 封装了数据返回规范和错误处理函数
+
   ![](./images/1.png)
 
   ![](./images/2.png)

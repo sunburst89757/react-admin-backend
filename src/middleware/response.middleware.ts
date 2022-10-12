@@ -5,18 +5,21 @@ export const responseFormat = async (ctx: Context, next: Next) => {
   ctx.onSuccess = ({
     data,
     code = 200,
-    message,
+    message = HttpStatus[code],
     success = true,
   }: SuccessRes) => {
-    console.log(data, code, HttpStatus[code], success);
     ctx.body = {
       code,
       success,
       data,
-      message: message || HttpStatus[code],
+      message,
     };
   };
-  ctx.onError = ({ code, message, success = false }: ErrorRes) => {
+  ctx.onError = ({
+    code,
+    message = HttpStatus[code],
+    success = false,
+  }: ErrorRes) => {
     ctx.body = {
       code,
       success,

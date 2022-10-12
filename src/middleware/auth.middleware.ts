@@ -1,4 +1,6 @@
+import jwt from "jsonwebtoken";
 import { Context, Next } from "koa";
+import { PUBLIC_KEY } from "../app/config";
 import { db } from "../app/dataBase";
 import { HttpStatus } from "../types/httpStatus";
 import { IUserInfo } from "../types/user.type";
@@ -7,6 +9,22 @@ import { md5Password } from "../utils/handlePassword";
 class AuthMiddleware {
   async verifyAuth(ctx: Context, next: Next) {
     console.log("verify middleware ~");
+    const { authorization } = ctx.headers;
+    // postman 会加上token前缀
+    const token = authorization!.replace("Bearer ", "");
+    try {
+      // 公钥解密
+      const res = jwt.verify(token, PUBLIC_KEY, {
+        algorithms: ["RS256"],
+      });
+      ctx.userId = Number((res as { userId: string }).userId);
+    } catch (error) {
+      console.log(error);
+      return ctx.onError({
+        code: HttpStatus.UNAUTHORIZED,
+        message: "token失效,请重新登录",
+      });
+    }
     await next();
   }
   async encryptPassword(ctx: Context, next: Next) {
@@ -44,7 +62,8 @@ class AuthMiddleware {
       });
     } else {
       // 验证成功
-      ctx.user = { userId: res.id, username: res.username };
+
+      ctx.user = { username: res.username, userId: res.id };
     }
     await next();
   }

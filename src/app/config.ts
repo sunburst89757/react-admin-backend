@@ -1,5 +1,13 @@
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 dotenv.config();
+export const PRIVATE_KEY = fs.readFileSync(
+  path.resolve(__dirname, "../../keys/rsa_private_key.pem")
+);
+export const PUBLIC_KEY = fs.readFileSync(
+  path.resolve(__dirname, "../../keys/rsa_public_key.pem")
+);
 export const {
   APP_HOST,
   APP_PORT,

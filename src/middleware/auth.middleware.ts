@@ -30,6 +30,25 @@ class AuthMiddleware {
     }
     await next();
   }
+  async verifyLogin(ctx: Context, next: Next) {
+    const { username, password } = ctx.query;
+    const res = await db.user.findUnique({
+      where: {
+        username: username as string,
+      },
+    });
+    if (res?.password !== md5Password(password as string)) {
+      return ctx.onError({
+        code: HttpStatus.BAD_REQUEST,
+        message: "用户名或者密码错误",
+      });
+    } else {
+      // 验证成功
+      ctx.user = { userId: res.id, username: res.username };
+    }
+    await next();
+  }
 }
 
-export const { verifyAuth, encryptPassword, verifyUser } = new AuthMiddleware();
+export const { verifyAuth, encryptPassword, verifyUser, verifyLogin } =
+  new AuthMiddleware();

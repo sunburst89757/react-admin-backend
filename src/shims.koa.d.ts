@@ -11,9 +11,14 @@ export type SuccessRes = {
   message?: string;
   data: any;
 };
+export type IUser = {
+  username: string;
+  userId: number;
+};
 declare module "koa" {
   export interface DefaultContext {
     onSuccess: (data: SuccessRes) => void;
     onError: (err: ErrorRes) => void;
+    user: IUser;
   }
 }

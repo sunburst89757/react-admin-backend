@@ -8,7 +8,9 @@
     "koa"
   ],
   "scripts": {
-    "start": "nodemon ./src/index.ts"
+    "start": "nodemon ./src/index.ts",
+    "db": "prisma migrate dev --name init",
+    "generate": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^4.4.0",

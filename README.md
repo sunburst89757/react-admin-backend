@@ -1,24 +1,21 @@
 ## koa-ts-template
 
-这是一个通用的 koa typescript 配置环境，支持的功能如下
+general 分支集成了常用的注册用户 登录功能
 
-- 集成 [prisma](https://www.prisma.io/) 对 ts 类型支持友好的数据库 ORM 支持 MYSQL/PostgreSQL/SQLite/MongoDB 等
-- 封装了数据返回规范和错误处理函数
+### 使用
 
-  ![](./images/1.png)
+- 登录使用的是 jwt token 使用的是 openSSL 公私钥加密的方式 生成方式[见此](https://www.fzb.me/2015-1-15-openssl-rsa.html)
+- test.controller.ts 是对 token 的校验测试，使用在具体项目时可以删除
 
-  ![](./images/2.png)
+### 注意
+
+在定义 koa-bodyparser 库的 body 类型遇到了类型定义的问题，采用了修改 node-modules 中@types/koa-bodyparser 中 index.d.ts 的类型并用 patch-package 这个第三方库保证使用本模板安装环境时也修改这个类型文件。具体使用时采用类型断言的方式绕开 ts 检测。
+
+![](./images/3.png)
+![](./images/4.png)
 
 ```ts
-//  错误处理
-ctx.onError({
-  code: HttpStatus.FORBIDDEN,
-});
-//  成功数据返回
-ctx.onSuccess({
-  data: res,
-  code: HttpStatus.OK,
-});
+const { username, password } = ctx.request.body as IUserInfo;
 ```
 
-- 封装通用的路由中间件注册方案解放双手不用手动注册路由
+实现方式不够优雅，如果有更好的方式欢迎 PR

@@ -1,12 +1,15 @@
+import { db } from "../app/dataBase";
+
 class UserService {
-  async createUser() {
+  async createUser(username: string, password: string) {
     try {
-      // const res = await db.user.create({
-      //    data: {
-      //     username:
-      //    }
-      // })
-      return 123;
+      const res = await db.user.create({
+        data: {
+          username,
+          password,
+        },
+      });
+      return res;
     } catch (error: any) {
       console.error(error.message);
     }

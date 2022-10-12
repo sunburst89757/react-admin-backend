@@ -1,0 +1,16 @@
+diff --git a/node_modules/@types/koa-bodyparser/index.d.ts b/node_modules/@types/koa-bodyparser/index.d.ts
+index 7946e5a..9324c72 100644
+--- a/node_modules/@types/koa-bodyparser/index.d.ts
++++ b/node_modules/@types/koa-bodyparser/index.d.ts
+@@ -20,9 +20,9 @@
+ import * as Koa from "koa";
+ 
+ declare module "koa" {
+-    interface Request {
++    interface Request{
+         // any declaration breaks types intellisense and type safety, keep it at least Record<string, unknown>
+-        body?: Record<string, unknown>;
++        body: Record<string,any>;
+         rawBody: string;
+     }
+ }

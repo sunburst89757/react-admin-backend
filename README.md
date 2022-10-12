@@ -9,7 +9,15 @@ general 分支集成了常用的注册用户 登录功能
 
 ### 注意
 
-在定义 koa-bodyparser 库的 body 类型遇到了类型定义的问题，采用了修改 node-modules 中@types/koa-bodyparser 中 index.d.ts 的类型并用 patch-package 这个第三方库保证使用本模板安装环境时也修改这个类型文件。具体使用时采用类型断言的方式绕开 ts 检测。
+1. 每次手动修改 model 后需要重新生成 prisma client api，即手动执行
+
+```
+ npm run db
+```
+
+如果执行完后仍然 ts 没有正确的代码提示，关掉项目重新启动即可
+
+2. 在定义 koa-bodyparser 库的 body 类型遇到了类型定义的问题，采用了修改 node-modules 中@types/koa-bodyparser 中 index.d.ts 的类型并用 patch-package 这个第三方库保证使用本模板安装环境时也修改这个类型文件。具体使用时采用类型断言的方式绕开 ts 检测。
 
 ![](./images/3.png)
 ![](./images/4.png)

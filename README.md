@@ -2,10 +2,42 @@
 
 general 分支集成了常用的注册用户 登录功能
 
-### 使用
-
 - 登录使用的是 jwt token 使用的是 openSSL 公私钥加密的方式 生成方式[见此](https://www.fzb.me/2015-1-15-openssl-rsa.html)
 - test.controller.ts 是对 token 的校验测试，使用在具体项目时可以删除
+
+### 目录结构
+
+![](./images/5.png)
+
+- images readme 文件中存放图片
+- keys 公私钥存放处
+- patches 修改 node_modules 的记录文件
+- prisma 数据库映射文件
+- src 资源目录
+  - app 全局配置
+
+### 使用
+
+- 根目录添加.env 文件 设置 DATABASE_URL 参考[prisma 文档](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases/connect-your-database-typescript-postgres).
+- .env 文件 添加 APP_HOST APP_PORT 设置 host 和项目启动端口
+- 根目录创建 keys 文件夹在该文件夹下使用 openSSL 生成公私钥对
+- 安装依赖
+
+  ```
+  npm run install
+  ```
+
+- 将 model 映射到数据库
+
+  ```
+  npm run db
+  ```
+
+- 开启应用
+
+  ```
+  npm run start
+  ```
 
 ### 注意
 

@@ -28,6 +28,11 @@ class UserController {
       },
     });
   }
+  async logout(ctx: Context) {
+    ctx.onSuccess({
+      data: null,
+    });
+  }
 }
 
-export const { create, login } = new UserController();
+export const { create, login, logout } = new UserController();

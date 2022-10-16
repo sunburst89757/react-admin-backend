@@ -25,7 +25,12 @@ class RoleService {
         const fatherId = menu.parentId;
         const fatherMenu = res.find((menu) => menu.id === fatherId);
         // @ts-ignore;
-        fatherMenu.children = menu;
+        fatherMenu.children || (fatherMenu.children = []);
+        // @ts-ignore;
+        fatherMenu.children.push(menu);
+      } else {
+        // @ts-ignore;
+        menu.children = null;
       }
     });
     // 删除重复的子路由

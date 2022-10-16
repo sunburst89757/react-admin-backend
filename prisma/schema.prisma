@@ -18,7 +18,7 @@ model User {
   avatarUrl String?
   // 一对多做映射使用 不在数据库生成 
   Role      Role     @relation(fields: [roleId], references: [id])
-  roleId    Int @default(5)
+  roleId    Int @default(2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -39,6 +39,7 @@ model Menu {
   path String
   sort Int 
   parentId Int    @default(0)
+  isAuth Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   roles RoleOnMenu[]
@@ -49,6 +50,9 @@ model RoleOnMenu {
   roleId Int
   menu Menu @relation(fields: [menuId],references: [id])
   menuId Int
+  isValid Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   // 双主键
   @@id([roleId,menuId])
 }

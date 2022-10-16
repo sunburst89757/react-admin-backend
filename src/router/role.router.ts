@@ -1,7 +1,8 @@
 import { Context, DefaultState } from "koa";
 import Router from "koa-router";
-import { create } from "../controller/role.controller";
+import { create,distributeRole } from "../controller/role.controller";
 import { verifyAuth } from "../middleware/auth.middleware";
-const userRouter = new Router<DefaultState, Context>({ prefix: "/role" });
-userRouter.post("/addRole", verifyAuth, create);
-export default userRouter;
+const roleRouter = new Router<DefaultState, Context>({ prefix: "/role" });
+roleRouter.post("/addRole", verifyAuth, create);
+roleRouter.post("/distribute",verifyAuth,distributeRole)
+export default roleRouter;

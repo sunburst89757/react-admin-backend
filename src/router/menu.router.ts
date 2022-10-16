@@ -1,6 +1,9 @@
 import { Context, DefaultState } from "koa";
 import Router from "koa-router";
-import { create } from "../controller/menu.controller";
-const userRouter = new Router<DefaultState, Context>({ prefix: "/menu" });
-userRouter.post("/add", create);
-export default userRouter;
+import { create, queryMenuList } from "../controller/menu.controller";
+import { verifyAuth } from "../middleware/auth.middleware";
+const menuRouter = new Router<DefaultState, Context>({ prefix: "/menu" });
+menuRouter.post("/add", verifyAuth, create);
+menuRouter.get("/list", verifyAuth, queryMenuList);
+
+export default menuRouter;

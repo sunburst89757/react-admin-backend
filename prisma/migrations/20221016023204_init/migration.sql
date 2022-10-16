@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `menu` ADD COLUMN `isAuth` BOOLEAN NOT NULL DEFAULT false;

@@ -9,6 +9,13 @@ class MenuController {
       data: res,
     });
   }
+  async queryMenuList(ctx: Context) {
+    const { roleId } = ctx.query;
+    const data = await service.queryMenuListByRoleId(Number(roleId));
+    ctx.onSuccess({
+      data,
+    });
+  }
 }
 
-export const { create } = new MenuController();
+export const { create, queryMenuList } = new MenuController();

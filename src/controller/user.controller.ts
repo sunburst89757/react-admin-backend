@@ -14,7 +14,7 @@ class UserController {
     });
   }
   async login(ctx: Context, next: Next) {
-    const { userId, username } = ctx.user;
+    const { userId, username, roleId } = ctx.user;
     //  openSSL 生成的私钥颁发token
     const token = jwt.sign({ userId, username }, PRIVATE_KEY, {
       expiresIn: 60 * 60 * 24,
@@ -23,6 +23,7 @@ class UserController {
     ctx.onSuccess({
       data: {
         userId,
+        roleId,
         username,
         token,
       },

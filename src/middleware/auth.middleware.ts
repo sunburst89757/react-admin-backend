@@ -63,7 +63,7 @@ class AuthMiddleware {
     } else {
       // 验证成功
 
-      ctx.user = { username: res.username, userId: res.id };
+      ctx.user = { username: res.username, userId: res.id, roleId: res.roleId };
     }
     await next();
   }

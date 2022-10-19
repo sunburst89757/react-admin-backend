@@ -36,7 +36,7 @@ model Menu {
   id        Int      @id @default(autoincrement())
   name String @unique
   icon String?
-  path String
+  path String @unique
   sort Int 
   parentId Int    @default(0)
   isAuth Boolean @default(false)

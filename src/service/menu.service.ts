@@ -1,12 +1,41 @@
 import { db } from "../app/dataBase";
-import { IPath } from "./role.service";
+import { IMenu } from "./role.service";
 
 class RoleService {
-  async addPath(path: IPath) {
-    const res = await db.menu.create({
-      data: path,
-    });
-    return res;
+  async addMenu(menu: IMenu) {
+    const { path } = menu;
+    const menuArr = path.split("/");
+    if (menuArr.length === 2) {
+      const res = await db.menu.create({
+        data: {
+          ...menu,
+          path: menuArr[1],
+          roles: {
+            create: {
+              // 没指定角色就是通用角色
+              roleId: 2,
+            },
+          },
+        },
+      });
+      return res;
+    } else {
+      const res = await this.findFatherMenu(menuArr[1]);
+      const res1 = await db.menu.create({
+        data: {
+          ...menu,
+          parentId: res!.id,
+          path: menuArr[2],
+          roles: {
+            create: {
+              // 没指定角色就是通用角色
+              roleId: 2,
+            },
+          },
+        },
+      });
+      return res1;
+    }
   }
   async queryMenuListByRoleId(roleId: number) {
     const res = await db.menu.findMany({
@@ -36,6 +65,15 @@ class RoleService {
     // 删除重复的子路由
     const realRes = res.filter((menu) => menu.parentId === 0);
     return realRes;
+  }
+  async findFatherMenu(path: string) {
+    const res = await db.menu.findUnique({
+      where: {
+        path,
+      },
+    });
+    console.log(res?.id);
+    return res;
   }
 }
 

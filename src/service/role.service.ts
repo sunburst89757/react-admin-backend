@@ -1,5 +1,5 @@
 import { db } from "../app/dataBase";
-export type IPath = {
+export type IMenu = {
   name: string;
   icon: string;
   path: string;
@@ -7,7 +7,7 @@ export type IPath = {
   parentId?: number;
 };
 class RoleService {
-  async addRole(roleName: string, path?: IPath) {
+  async addRole(roleName: string, path?: IMenu) {
     const unAuth = await db.menu.findMany({
       where: {
         isAuth: false,
@@ -40,14 +40,14 @@ class RoleService {
     });
     return res;
   }
-  async distributeRoleByUserId(userId: number,roleId:number) {
+  async distributeRoleByUserId(userId: number, roleId: number) {
     await db.user.update({
       where: {
         id: userId,
       },
       data: {
         roleId,
-      }
+      },
     });
   }
 }

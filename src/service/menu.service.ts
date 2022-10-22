@@ -39,7 +39,7 @@ class RoleService {
     }
   }
   async readMenuList(path: string) {
-    if (path === "undefined") {
+    if (!path) {
       const res = await db.menu.findMany();
       return res;
     } else {

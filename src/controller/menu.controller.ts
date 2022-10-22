@@ -1,3 +1,4 @@
+import { PageInfo } from "./../types/user.type";
 import { Context } from "koa";
 import service from "../service/menu.service";
 import { IMenu } from "../service/role.service";
@@ -19,7 +20,7 @@ class MenuController {
   // }
   //  查询所有菜单 ---菜单管理使用
   async getMenuList(ctx: Context) {
-    const { path } = ctx.params;
+    const { path, page, pageSize } = ctx.query;
     const data = await service.readMenuList(path as string);
     ctx.onSuccess({
       data,

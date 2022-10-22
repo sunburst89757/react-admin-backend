@@ -1,8 +1,9 @@
+import { Menu } from "@prisma/client";
 import { db } from "../app/dataBase";
 import { IMenu } from "./role.service";
 
 class RoleService {
-  async addMenu(menu: IMenu) {
+  async createMenu(menu: IMenu) {
     const { path } = menu;
     const menuArr = path.split("/");
     if (menuArr.length === 2) {
@@ -12,8 +13,8 @@ class RoleService {
           path: menuArr[1],
           roles: {
             create: {
-              // 没指定角色就是通用角色
-              roleId: 2,
+              // 创建的新菜单都默认绑定给管理员
+              roleId: 1,
             },
           },
         },
@@ -37,34 +38,26 @@ class RoleService {
       return res1;
     }
   }
-  async queryMenuListByRoleId(roleId: number) {
-    const res = await db.menu.findMany({
-      where: {
-        roles: {
-          some: {
-            roleId,
-          },
+  async readMenuList(path: string) {
+    if (path === "undefined") {
+      const res = await db.menu.findMany();
+      return res;
+    } else {
+      const res = await db.menu.findMany({
+        where: {
+          path,
         },
-      },
-    });
-    if (res.length === 0) return null;
-    res.forEach((menu) => {
-      // parentId = 0的都是一级路由
-      if (menu.parentId > 0) {
-        const fatherId = menu.parentId;
-        const fatherMenu = res.find((menu) => menu.id === fatherId);
-        // @ts-ignore;
-        fatherMenu.children || (fatherMenu.children = []);
-        // @ts-ignore;
-        fatherMenu.children.push(menu);
-      } else {
-        // @ts-ignore;
-        menu.children = null;
-      }
-    });
-    // 删除重复的子路由
-    const realRes = res.filter((menu) => menu.parentId === 0);
-    return realRes;
+      });
+      const menu = res[0];
+      const children = await db.menu.findMany({
+        where: {
+          parentId: menu.id,
+        },
+      });
+      // @ts-ignore
+      menu.children = children.length > 0 ? children : null;
+      return [menu];
+    }
   }
   async findFatherMenu(path: string) {
     const res = await db.menu.findUnique({

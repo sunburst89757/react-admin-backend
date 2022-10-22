@@ -16,6 +16,14 @@ class RoleController {
       data,
     });
   }
+  async getMenuListByRoleId(ctx: Context) {
+    const { roleId } = ctx.params;
+    const data = await service.queryMenuListByRoleId(Number(roleId));
+    ctx.onSuccess({
+      data,
+    });
+  }
 }
 
-export const { create, distributeRole } = new RoleController();
+export const { create, distributeRole, getMenuListByRoleId } =
+  new RoleController();

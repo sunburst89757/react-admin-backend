@@ -4,18 +4,27 @@ import { IMenu } from "../service/role.service";
 class MenuController {
   async create(ctx: Context) {
     const menu = ctx.request.body;
-    const res = await service.addMenu(menu as IMenu);
+    const res = await service.createMenu(menu as IMenu);
     ctx.onSuccess({
       data: res,
     });
   }
-  async queryMenuList(ctx: Context) {
-    const { roleId } = ctx.query;
-    const data = await service.queryMenuListByRoleId(Number(roleId));
+  // 登录后查询使用
+  // async getMenuListByRoleId(ctx: Context) {
+  //   const { roleId, path } = ctx.query;
+  //   const data = await service.readMenuList(path as string);
+  //   ctx.onSuccess({
+  //     data,
+  //   });
+  // }
+  //  查询所有菜单 ---菜单管理使用
+  async getMenuList(ctx: Context) {
+    const { path } = ctx.params;
+    const data = await service.readMenuList(path as string);
     ctx.onSuccess({
       data,
     });
   }
 }
 
-export const { create, queryMenuList } = new MenuController();
+export const { create, getMenuList } = new MenuController();

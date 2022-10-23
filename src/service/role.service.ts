@@ -89,8 +89,6 @@ class RoleService {
         menu.children.sort((pre, next) => pre.sort - next.sort);
       }
     });
-    // 删除重复的子路由
-    // const realRes = res.filter((menu) => menu.parentId === 0);
     return sortRes;
   }
 }

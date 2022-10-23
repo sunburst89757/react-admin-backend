@@ -38,18 +38,68 @@ class RoleService {
       return res1;
     }
   }
-  async readMenuList(path: string, page: number = 1, pageSize: number = 10) {
+  async readMenuList(
+    path: string,
+    page: number = 1,
+    pageSize: number = 10,
+    name: string
+  ) {
     if (!path) {
-      const res = await db.menu.findMany({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      });
-      return res;
+      const res = await db.$transaction([
+        db.menu.findMany({
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          where: {
+            name: {
+              contains: name,
+            },
+          },
+          orderBy: {
+            sort: "asc",
+          },
+        }),
+        db.menu.count({
+          where: {
+            name: {
+              contains: name,
+            },
+          },
+        }),
+      ]);
+      if (!name) {
+        // 查所有 排序
+        const realRes: Menu[] = [];
+        const fatherMenu = res[0].filter((menu) => menu.parentId === 0);
+        fatherMenu.sort((pre, next) => pre.sort - next.sort);
+        const sonMenu = res[0].filter((menu) => menu.parentId !== 0);
+        sonMenu.sort((pre, next) => pre.sort - next.sort);
+        fatherMenu.forEach((menu) => {
+          realRes.push(menu);
+          realRes.push(
+            ...sonMenu.filter((route) => route.parentId === menu.id)
+          );
+        });
+        return {
+          page,
+          pageSize,
+          total: res[1],
+          menuList: realRes,
+        };
+      }
+      return {
+        page,
+        pageSize,
+        total: res[1],
+        menuList: res[0].length === 0 ? null : res[0],
+      };
     } else {
       // 传递路径查询只有一条结果
       const res = await db.menu.findMany({
         where: {
           path,
+          name: {
+            contains: name,
+          },
         },
       });
       const menu = res[0];
@@ -59,6 +109,9 @@ class RoleService {
           take: pageSize,
           where: {
             parentId: menu.id,
+            name: {
+              contains: name,
+            },
           },
           orderBy: {
             sort: "asc",
@@ -75,7 +128,7 @@ class RoleService {
         page,
         pageSize,
         total: children[1],
-        menuList: res,
+        menuList: res.length === 0 ? null : res,
       };
     }
   }

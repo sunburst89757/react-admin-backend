@@ -38,25 +38,45 @@ class RoleService {
       return res1;
     }
   }
-  async readMenuList(path: string) {
+  async readMenuList(path: string, page: number = 1, pageSize: number = 10) {
     if (!path) {
-      const res = await db.menu.findMany();
+      const res = await db.menu.findMany({
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      });
       return res;
     } else {
+      // 传递路径查询只有一条结果
       const res = await db.menu.findMany({
         where: {
           path,
         },
       });
       const menu = res[0];
-      const children = await db.menu.findMany({
-        where: {
-          parentId: menu.id,
-        },
-      });
-      // @ts-ignore
-      menu.children = children.length > 0 ? children : null;
-      return [menu];
+      const children = await db.$transaction([
+        db.menu.findMany({
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          where: {
+            parentId: menu.id,
+          },
+          orderBy: {
+            sort: "asc",
+          },
+        }),
+        db.menu.count({
+          where: {
+            parentId: menu.id,
+          },
+        }),
+      ]);
+      res.push(...children[0]);
+      return {
+        page,
+        pageSize,
+        total: children[1],
+        menuList: res,
+      };
     }
   }
   async findFatherMenu(path: string) {

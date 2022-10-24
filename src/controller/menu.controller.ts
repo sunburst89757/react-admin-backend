@@ -1,3 +1,4 @@
+import { Menu } from "@prisma/client";
 import { PageInfo } from "./../types/user.type";
 import { Context } from "koa";
 import service from "../service/menu.service";
@@ -10,14 +11,6 @@ class MenuController {
       data: res,
     });
   }
-  // 登录后查询使用
-  // async getMenuListByRoleId(ctx: Context) {
-  //   const { roleId, path } = ctx.query;
-  //   const data = await service.readMenuList(path as string);
-  //   ctx.onSuccess({
-  //     data,
-  //   });
-  // }
   //  查询所有菜单 ---菜单管理使用
   async getMenuList(ctx: Context) {
     const { path, page, pageSize, name } = ctx.query;
@@ -33,6 +26,22 @@ class MenuController {
       data,
     });
   }
+  async updateMenu(ctx: Context) {
+    console.log(ctx.request.body);
+    const data = await service.updateMenu(ctx.request.body as Menu);
+    ctx.onSuccess({
+      data,
+    });
+  }
+  async deleteMenu(ctx: Context) {
+    const { id } = ctx.params;
+    await service.deleteMenu(Number(id));
+    ctx.onSuccess({
+      data: true,
+      message: "删除成功",
+    });
+  }
 }
 
-export const { create, getMenuList } = new MenuController();
+export const { create, getMenuList, updateMenu, deleteMenu } =
+  new MenuController();

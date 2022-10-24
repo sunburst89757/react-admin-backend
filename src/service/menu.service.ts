@@ -1,9 +1,8 @@
 import { Menu } from "@prisma/client";
-import { machine } from "os";
 import { db } from "../app/dataBase";
 import { IMenu } from "./role.service";
 
-class RoleService {
+class MenuService {
   async createMenu(menu: IMenu) {
     const { path } = menu;
     const menuArr = path.split("/");
@@ -156,6 +155,55 @@ class RoleService {
     console.log(res?.id);
     return res;
   }
+  async updateMenu(menu: Menu) {
+    const { id, name, icon, sort, isValid } = menu;
+    const res = await db.menu.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        icon,
+        sort,
+        isValid,
+      },
+    });
+    return res;
+  }
+  async deleteMenu(id: number) {
+    //  先删除关系表再删除menu表才可以
+    await db.roleOnMenu.deleteMany({
+      where: {
+        menuId: id,
+      },
+    });
+    const menu = await db.menu.delete({
+      where: {
+        id,
+      },
+    });
+    if (menu?.parentId === 0) {
+      const sonMenu = await db.menu.findMany({
+        where: {
+          parentId: id,
+        },
+      });
+      console.log(sonMenu, "sonMenu");
+
+      sonMenu.forEach(async (menu) => {
+        await db.roleOnMenu.deleteMany({
+          where: {
+            menuId: menu.id,
+          },
+        });
+      });
+      await db.menu.deleteMany({
+        where: {
+          parentId: id,
+        },
+      });
+    }
+  }
 }
 
-export default new RoleService();
+export default new MenuService();

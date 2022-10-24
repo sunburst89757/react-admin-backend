@@ -5,6 +5,7 @@ export type IMenu = {
   icon: string;
   path: string;
   sort: number;
+  isValid?:boolean;
   parentId?: number;
 };
 class RoleService {

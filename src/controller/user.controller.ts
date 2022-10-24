@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Context, Next } from "koa";
 import { PRIVATE_KEY } from "../app/config";
+import { db } from "../app/dataBase";
 import userService from "../service/user.service";
 import { HttpStatus } from "../types/httpStatus";
 import { IUserInfo } from "../types/user.type";
@@ -34,6 +35,35 @@ class UserController {
       data: null,
     });
   }
+  async updateUser(ctx: Context) {
+    console.log(ctx.request.body);
+
+    const data = await userService.updateUser(ctx.request.body as any);
+
+    ctx.onSuccess({
+      data,
+    });
+  }
+  async deleteUser(ctx: Context) {
+    const { id } = ctx.params;
+    const data = await userService.deleteUser(Number(id));
+    ctx.onSuccess({
+      data,
+    });
+  }
+  async getUserList(ctx: Context) {
+    console.log(ctx.query);
+    const { username, page, pageSize } = ctx.query;
+    const data = await userService.getUserList({
+      username,
+      page: Number(page),
+      pageSize: Number(pageSize),
+    } as any);
+    ctx.onSuccess({
+      data,
+    });
+  }
 }
 
-export const { create, login, logout } = new UserController();
+export const { create, login, logout, updateUser, deleteUser, getUserList } =
+  new UserController();

@@ -12,5 +12,7 @@ menuRouter.post("/add", verifyAuth, create);
 menuRouter.get("/list", verifyAuth, getMenuList);
 menuRouter.post("/update", verifyAuth, updateMenu);
 menuRouter.delete("/delete/:id", verifyAuth, deleteMenu);
+menuRouter.get("/getUserList", verifyAuth, );
+
 
 export default menuRouter;

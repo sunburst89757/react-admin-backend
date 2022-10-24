@@ -1,11 +1,12 @@
 import { Menu } from "@prisma/client";
+import { WHITE_LIST } from "../app/config";
 import { db } from "../app/dataBase";
 export type IMenu = {
   name: string;
   icon: string;
   path: string;
   sort: number;
-  isValid?:boolean;
+  isValid?: boolean;
   parentId?: number;
 };
 class RoleService {
@@ -53,15 +54,21 @@ class RoleService {
     });
   }
   async queryMenuListByRoleId(roleId: number) {
-    const res = await db.menu.findMany({
-      where: {
-        roles: {
-          some: {
-            roleId,
+    let res;
+    if (WHITE_LIST.includes(roleId)) {
+      res = await db.menu.findMany();
+    } else {
+      res = await db.menu.findMany({
+        where: {
+          roles: {
+            some: {
+              roleId,
+            },
           },
         },
-      },
-    });
+      });
+    }
+
     if (res.length === 0) return null;
     //  不传指定路径 children的构造方法 用于登录获取菜单
     //  父级路由排序

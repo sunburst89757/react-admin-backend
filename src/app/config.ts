@@ -8,6 +8,8 @@ export const PRIVATE_KEY = fs.readFileSync(
 export const PUBLIC_KEY = fs.readFileSync(
   path.resolve(__dirname, "../../keys/rsa_public_key.pem")
 );
+//  白名单添加的是角色id
+export const WHITE_LIST = [1];
 export const {
   APP_HOST,
   APP_PORT,

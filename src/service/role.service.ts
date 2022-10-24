@@ -56,10 +56,16 @@ class RoleService {
   async queryMenuListByRoleId(roleId: number) {
     let res;
     if (WHITE_LIST.includes(roleId)) {
-      res = await db.menu.findMany();
+      res = await db.menu.findMany({
+        where: {
+          isValid: true,
+        },
+      });
+      console.log(res, "是啥");
     } else {
       res = await db.menu.findMany({
         where: {
+          isValid: true,
           roles: {
             some: {
               roleId,
@@ -76,6 +82,8 @@ class RoleService {
     const sortRes = res
       .filter((menu) => menu.parentId === 0)
       .sort((pre, next) => pre.sort - next.sort);
+    console.log(sortRes, "是啥");
+
     res.forEach((menu) => {
       // parentId = 0的都是一级路由
       if (menu.parentId > 0) {

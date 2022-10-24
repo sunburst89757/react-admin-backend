@@ -168,6 +168,17 @@ class MenuService {
         isValid,
       },
     });
+    // 禁用父级菜单 所有下面的都被禁止
+    if (res.parentId === 0 && !isValid) {
+      await db.menu.updateMany({
+        where: {
+          parentId: res.id,
+        },
+        data: {
+          isValid,
+        },
+      });
+    }
     return res;
   }
   async deleteMenu(id: number) {

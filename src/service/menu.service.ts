@@ -1,4 +1,5 @@
 import { Menu } from "@prisma/client";
+import { machine } from "os";
 import { db } from "../app/dataBase";
 import { IMenu } from "./role.service";
 
@@ -45,14 +46,41 @@ class RoleService {
     name: string
   ) {
     if (!path) {
+      if (name) {
+        const res = await db.$transaction([
+          db.menu.findMany({
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+            where: {
+              name: {
+                contains: name,
+              },
+            },
+            orderBy: {
+              sort: "asc",
+            },
+          }),
+          db.menu.count({
+            where: {
+              name: {
+                contains: name,
+              },
+            },
+          }),
+        ]);
+        return {
+          page,
+          pageSize,
+          total: res[1],
+          list: res[0].length === 0 ? null : res[0],
+        };
+      }
       const res = await db.$transaction([
         db.menu.findMany({
           skip: (page - 1) * pageSize,
           take: pageSize,
           where: {
-            name: {
-              contains: name,
-            },
+            parentId: 0,
           },
           orderBy: {
             sort: "asc",
@@ -60,37 +88,15 @@ class RoleService {
         }),
         db.menu.count({
           where: {
-            name: {
-              contains: name,
-            },
+            parentId: 0,
           },
         }),
       ]);
-      if (!name) {
-        // 查所有 排序
-        const realRes: Menu[] = [];
-        const fatherMenu = res[0].filter((menu) => menu.parentId === 0);
-        fatherMenu.sort((pre, next) => pre.sort - next.sort);
-        const sonMenu = res[0].filter((menu) => menu.parentId !== 0);
-        sonMenu.sort((pre, next) => pre.sort - next.sort);
-        fatherMenu.forEach((menu) => {
-          realRes.push(menu);
-          realRes.push(
-            ...sonMenu.filter((route) => route.parentId === menu.id)
-          );
-        });
-        return {
-          page,
-          pageSize,
-          total: res[1],
-          menuList: realRes,
-        };
-      }
       return {
         page,
         pageSize,
         total: res[1],
-        menuList: res[0].length === 0 ? null : res[0],
+        list: res[0].length === 0 ? null : res[0],
       };
     } else {
       // 传递路径查询只有一条结果
@@ -102,6 +108,15 @@ class RoleService {
           },
         },
       });
+      console.log(res, "执行");
+      if (res.length === 0) {
+        return {
+          page,
+          pageSize,
+          total: 0,
+          list: null,
+        };
+      }
       const menu = res[0];
       const children = await db.$transaction([
         db.menu.findMany({
@@ -128,7 +143,7 @@ class RoleService {
         page,
         pageSize,
         total: children[1],
-        menuList: res.length === 0 ? null : res,
+        list: res.length === 0 ? null : res,
       };
     }
   }

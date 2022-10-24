@@ -7,6 +7,7 @@
     "typescript",
     "koa"
   ],
+  "main": "./src/index.ts",
   "scripts": {
     "start": "nodemon ./src/index.ts",
     "db": "prisma migrate dev --name init",

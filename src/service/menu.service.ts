@@ -189,20 +189,23 @@ class MenuService {
         },
       });
       console.log(sonMenu, "sonMenu");
-
-      sonMenu.forEach(async (menu) => {
-        await db.roleOnMenu.deleteMany({
-          where: {
-            menuId: menu.id,
-          },
-        });
-      });
+      // 必须这么写异步执行完之后才可以
+      await this.deleteAllSonMenu(sonMenu);
       await db.menu.deleteMany({
         where: {
           parentId: id,
         },
       });
     }
+  }
+  async deleteAllSonMenu(sonMenu: Menu[]) {
+    sonMenu.forEach(async (menu) => {
+      await db.roleOnMenu.deleteMany({
+        where: {
+          menuId: menu.id,
+        },
+      });
+    });
   }
 }
 

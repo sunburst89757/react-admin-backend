@@ -72,6 +72,7 @@ class RoleService {
     if (res.length === 0) return null;
     //  不传指定路径 children的构造方法 用于登录获取菜单
     //  父级路由排序
+
     const sortRes = res
       .filter((menu) => menu.parentId === 0)
       .sort((pre, next) => pre.sort - next.sort);

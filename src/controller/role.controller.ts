@@ -23,7 +23,18 @@ class RoleController {
       data,
     });
   }
+  async getRoleList(ctx: Context) {
+    const { roleName, page, pageSize } = ctx.query;
+    const data = await service.getRoleList({
+      roleName: roleName as string,
+      page: Number(page),
+      pageSize: Number(pageSize),
+    });
+    ctx.onSuccess({
+      data,
+    });
+  }
 }
 
-export const { create, distributeRole, getMenuListByRoleId } =
+export const { create, distributeRole, getMenuListByRoleId, getRoleList } =
   new RoleController();

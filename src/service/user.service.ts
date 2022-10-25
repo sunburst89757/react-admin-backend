@@ -1,14 +1,13 @@
-import { User } from "@prisma/client";
+import { Prisma, Role, User } from "@prisma/client";
 import { db } from "../app/dataBase";
 import { PageInfo } from "../types/user.type";
 
 class UserService {
-  async createUser(username: string, password: string) {
+  async createUser(userInfo: User) {
     try {
       const res = await db.user.create({
         data: {
-          username,
-          password,
+          ...userInfo,
         },
       });
       return res;
@@ -60,15 +59,49 @@ class UserService {
             contains: username,
           },
         },
+        include: {
+          role: {
+            select: {
+              roleName: true,
+              id: true,
+            },
+          },
+        },
       }),
     ]);
+    if (res[1].length === 0) {
+      return {
+        page,
+        pageSize,
+        total: res[0],
+        list: null,
+      };
+    }
+    // await this.getRoleName(res[1]);
     return {
       page,
       pageSize,
       total: res[0],
-      list: res[1].length === 0 ? null : res[1],
+      list: res[1],
     };
   }
+  // async getRoleName(userInfo: User[]) {
+  //   console.log("1", userInfo);
+  //   let promiseArr: Prisma.Prisma__RoleClient<Role | null, null>[] = [];
+  //   userInfo.forEach((menu) => {
+  //     const res = db.role.findUnique({
+  //       where: {
+  //         id: menu.roleId,
+  //       },
+  //     });
+  //     promiseArr.push(res);
+  //   });
+  //   const res = await Promise.all(promiseArr);
+  //   userInfo.forEach((menu, index) => {
+  //     // @ts-ignore
+  //     menu.roleName = res[index]?.roleName;
+  //   });
+  // }
 }
 
 export default new UserService();

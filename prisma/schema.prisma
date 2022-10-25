@@ -19,7 +19,7 @@ model User {
   isValid Boolean @default(true)
   description String?
   // 一对多做映射使用 不在数据库生成 
-  Role      Role     @relation(fields: [roleId], references: [id])
+  role      Role     @relation(fields: [roleId], references: [id])
   roleId    Int @default(2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -31,7 +31,7 @@ model Role {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   // 一对多做映射使用 不在数据库生成
-  User      User[]
+  user      User[]
   menus  RoleOnMenu[]
 }
 model Menu {

@@ -7,8 +7,8 @@ import { HttpStatus } from "../types/httpStatus";
 import { IUserInfo } from "../types/user.type";
 class UserController {
   async create(ctx: Context, next: Next) {
-    const { username, password } = ctx.request.body as IUserInfo;
-    const res = await userService.createUser(username, password);
+    console.log(ctx.request.body);
+    const res = await userService.createUser(ctx.request.body as any);
     ctx.onSuccess({
       data: res,
       code: HttpStatus.OK,

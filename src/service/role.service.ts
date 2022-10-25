@@ -1,3 +1,4 @@
+import { PageInfo } from "./../types/user.type";
 import { Menu } from "@prisma/client";
 import { WHITE_LIST } from "../app/config";
 import { db } from "../app/dataBase";
@@ -107,6 +108,36 @@ class RoleService {
       }
     });
     return sortRes;
+  }
+  async getRoleList({
+    roleName,
+    page = 1,
+    pageSize = 10,
+  }: { roleName: string } & PageInfo) {
+    const res = await db.$transaction([
+      db.role.count({
+        where: {
+          roleName: {
+            contains: roleName,
+          },
+        },
+      }),
+      db.role.findMany({
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        where: {
+          roleName: {
+            contains: roleName,
+          },
+        },
+      }),
+    ]);
+    return {
+      page,
+      pageSize,
+      total: res[0],
+      list: res[1],
+    };
   }
 }
 

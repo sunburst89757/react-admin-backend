@@ -1,6 +1,7 @@
-import { Prisma, Role, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { db } from "../app/dataBase";
 import { PageInfo } from "../types/user.type";
+import { md5Password } from "../utils/handlePassword";
 
 class UserService {
   async createUser(userInfo: User) {
@@ -18,17 +19,34 @@ class UserService {
   async updateUser(
     userInfo: Pick<
       User,
-      "id" | "username" | "isValid" | "description" | "roleId"
+      "id" | "username" | "isValid" | "description" | "roleId" | "password"
     >
   ) {
-    const res = await db.user.update({
-      where: {
-        id: userInfo.id,
-      },
-      data: {
-        ...userInfo,
-      },
-    });
+    let res;
+    if (!userInfo.password) {
+      res = await db.user.update({
+        where: {
+          id: userInfo.id,
+        },
+        data: {
+          username: userInfo.username,
+          isValid: userInfo.isValid,
+          description: userInfo.description,
+          roleId: userInfo.roleId,
+        },
+      });
+    } else {
+      res = await db.user.update({
+        where: {
+          id: userInfo.id,
+        },
+        data: {
+          ...userInfo,
+          password: md5Password(userInfo.password),
+        },
+      });
+    }
+
     return res;
   }
   async deleteUser(id: number) {

@@ -111,14 +111,18 @@ class RoleService {
   }
   async getRoleList({
     roleName,
+    description,
     page = 1,
     pageSize = 10,
-  }: { roleName: string } & PageInfo) {
+  }: { roleName: string; description: string } & PageInfo) {
     const res = await db.$transaction([
       db.role.count({
         where: {
           roleName: {
             contains: roleName,
+          },
+          description: {
+            contains: description,
           },
         },
       }),
@@ -128,6 +132,9 @@ class RoleService {
         where: {
           roleName: {
             contains: roleName,
+          },
+          description: {
+            contains: description,
           },
         },
       }),

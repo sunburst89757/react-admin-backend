@@ -24,9 +24,10 @@ class RoleController {
     });
   }
   async getRoleList(ctx: Context) {
-    const { roleName, page, pageSize } = ctx.query;
+    const { roleName, description, page, pageSize } = ctx.query;
     const data = await service.getRoleList({
       roleName: roleName as string,
+      description: description as string,
       page: Number(page),
       pageSize: Number(pageSize),
     });

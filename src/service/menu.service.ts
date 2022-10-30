@@ -39,41 +39,12 @@ class MenuService {
     }
   }
   async readMenuList(
-    path: string,
+    id: number,
     page: number = 1,
     pageSize: number = 10,
     name: string
   ) {
-    if (!path) {
-      if (name) {
-        const res = await db.$transaction([
-          db.menu.findMany({
-            skip: (page - 1) * pageSize,
-            take: pageSize,
-            where: {
-              name: {
-                contains: name,
-              },
-            },
-            orderBy: {
-              sort: "asc",
-            },
-          }),
-          db.menu.count({
-            where: {
-              name: {
-                contains: name,
-              },
-            },
-          }),
-        ]);
-        return {
-          page,
-          pageSize,
-          total: res[1],
-          list: res[0].length === 0 ? null : res[0],
-        };
-      }
+    if (!id) {
       const res = await db.$transaction([
         db.menu.findMany({
           skip: (page - 1) * pageSize,
@@ -101,10 +72,7 @@ class MenuService {
       // 传递路径查询只有一条结果
       const res = await db.menu.findMany({
         where: {
-          path,
-          name: {
-            contains: name,
-          },
+          id,
         },
       });
       console.log(res, "执行");
@@ -123,9 +91,6 @@ class MenuService {
           take: pageSize,
           where: {
             parentId: menu.id,
-            name: {
-              contains: name,
-            },
           },
           orderBy: {
             sort: "asc",

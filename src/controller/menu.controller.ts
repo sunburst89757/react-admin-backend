@@ -13,11 +13,11 @@ class MenuController {
   }
   //  查询所有菜单 ---菜单管理使用
   async getMenuList(ctx: Context) {
-    const { path, page, pageSize, name } = ctx.query;
+    const {  id, page, pageSize, name } = ctx.query;
     console.log(ctx.query);
 
     const data = await service.readMenuList(
-      path as string,
+      Number(id),
       Number(page) as any,
       Number(pageSize) as any,
       name as string

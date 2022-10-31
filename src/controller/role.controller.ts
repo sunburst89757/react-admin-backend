@@ -35,7 +35,22 @@ class RoleController {
       data,
     });
   }
+  async updateMenuList(ctx: Context) {
+    const { menuIds, roleId } = ctx.request.body;
+    const data = await service.updateMenuList(
+      roleId as number,
+      menuIds as number[]
+    );
+    ctx.onSuccess({
+      data,
+    });
+  }
 }
 
-export const { create, distributeRole, getMenuListByRoleId, getRoleList } =
-  new RoleController();
+export const {
+  create,
+  distributeRole,
+  getMenuListByRoleId,
+  getRoleList,
+  updateMenuList,
+} = new RoleController();

@@ -146,6 +146,24 @@ class RoleService {
       list: res[1],
     };
   }
+  async updateMenuList(roleId: number, menuIds: number[]) {
+    const data = menuIds.map((menuId) => ({
+      roleId,
+      menuId,
+    }));
+    // 先删除旧的，再添加新的
+    const res = await db.$transaction([
+      db.roleOnMenu.deleteMany({
+        where: {
+          roleId,
+        },
+      }),
+      db.roleOnMenu.createMany({
+        data,
+      }),
+    ]);
+    return res;
+  }
 }
 
 export default new RoleService();

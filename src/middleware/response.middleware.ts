@@ -23,7 +23,7 @@ export const responseFormat = async (ctx: Context, next: Next) => {
     ctx.body = {
       code,
       success,
-      message: message || HttpStatus[code],
+      message,
     };
   };
   await next();

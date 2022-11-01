@@ -10,8 +10,10 @@ export type IMenu = {
   isValid?: boolean;
   parentId?: number;
 };
+type IRoleInfo = Pick<Role, "description" | "isValid" | "roleName">;
 class RoleService {
-  async addRole(roleName: string, path?: IMenu) {
+  // path是新增除了未授权菜单外的其他菜单
+  async addRole({ roleName, isValid, description }: IRoleInfo, path?: IMenu) {
     const unAuth = await db.menu.findMany({
       where: {
         isAuth: false,
@@ -37,6 +39,8 @@ class RoleService {
     const res = await db.role.create({
       data: {
         roleName,
+        isValid,
+        description,
         menus: {
           create: menu,
         },
@@ -169,7 +173,7 @@ class RoleService {
     roleName,
     isValid,
     description,
-  }: Pick<Role, "id" | "description" | "isValid" | "roleName">) {
+  }: IRoleInfo & { id: number }) {
     const res = await db.role.update({
       where: {
         id,

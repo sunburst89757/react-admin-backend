@@ -61,6 +61,13 @@ class RoleController {
       data,
     });
   }
+  async deleteRole(ctx: Context) {
+    const { id } = ctx.params;
+    const data = await service.deleteRole(Number(id));
+    ctx.onSuccess({
+      data,
+    });
+  }
 }
 
 export const {
@@ -70,4 +77,5 @@ export const {
   getRoleList,
   updateMenuList,
   updateRoleInfo,
+  deleteRole,
 } = new RoleController();

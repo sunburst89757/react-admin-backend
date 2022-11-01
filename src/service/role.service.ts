@@ -186,6 +186,26 @@ class RoleService {
     });
     return res;
   }
+  async deleteRole(id: number) {
+    const res = await db.$transaction([
+      db.user.deleteMany({
+        where: {
+          roleId: id,
+        },
+      }),
+      db.roleOnMenu.deleteMany({
+        where: {
+          roleId: id,
+        },
+      }),
+      db.role.delete({
+        where: {
+          id,
+        },
+      }),
+    ]);
+    return res;
+  }
 }
 
 export default new RoleService();

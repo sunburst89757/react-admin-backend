@@ -45,6 +45,18 @@ class RoleController {
       data,
     });
   }
+  async updateRoleInfo(ctx: Context) {
+    const { roleName, description, isValid, id } = ctx.request.body;
+    const data = await service.updateRoleInfo({
+      id,
+      isValid,
+      description,
+      roleName,
+    });
+    ctx.onSuccess({
+      data,
+    });
+  }
 }
 
 export const {
@@ -53,4 +65,5 @@ export const {
   getMenuListByRoleId,
   getRoleList,
   updateMenuList,
+  updateRoleInfo,
 } = new RoleController();

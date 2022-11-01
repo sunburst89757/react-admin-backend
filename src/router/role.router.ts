@@ -6,6 +6,7 @@ import {
   getMenuListByRoleId,
   getRoleList,
   updateMenuList,
+  updateRoleInfo
 } from "../controller/role.controller";
 import { verifyAuth } from "../middleware/auth.middleware";
 const roleRouter = new Router<DefaultState, Context>({ prefix: "/role" });
@@ -14,4 +15,5 @@ roleRouter.post("/distribute", verifyAuth, distributeRole);
 roleRouter.get("/menuList/:roleId", verifyAuth, getMenuListByRoleId);
 roleRouter.get("/list", verifyAuth, getRoleList);
 roleRouter.post("/updateMenuList", verifyAuth, updateMenuList);
+roleRouter.post("/updateRoleInfo",verifyAuth,updateRoleInfo)
 export default roleRouter;

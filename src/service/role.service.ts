@@ -1,5 +1,5 @@
 import { PageInfo } from "./../types/user.type";
-import { Menu } from "@prisma/client";
+import { Menu, Role } from "@prisma/client";
 import { WHITE_LIST } from "../app/config";
 import { db } from "../app/dataBase";
 export type IMenu = {
@@ -162,6 +162,24 @@ class RoleService {
         data,
       }),
     ]);
+    return res;
+  }
+  async updateRoleInfo({
+    id,
+    roleName,
+    isValid,
+    description,
+  }: Pick<Role, "id" | "description" | "isValid" | "roleName">) {
+    const res = await db.role.update({
+      where: {
+        id,
+      },
+      data: {
+        roleName,
+        isValid,
+        description,
+      },
+    });
     return res;
   }
 }

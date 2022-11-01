@@ -187,12 +187,16 @@ class RoleService {
     return res;
   }
   async deleteRole(id: number) {
-    const res = await db.$transaction([
-      db.user.deleteMany({
+    try {
+      await db.user.deleteMany({
         where: {
           roleId: id,
         },
-      }),
+      });
+    } catch (error) {
+      console.log(error, "没有对应的用户属于该角色");
+    }
+    const res = await db.$transaction([
       db.roleOnMenu.deleteMany({
         where: {
           roleId: id,

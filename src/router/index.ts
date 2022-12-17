@@ -10,8 +10,12 @@ export const useRoutes = (app: Application) => {
       const { default: router }: { default: Router } = await import(
         `./${file}`
       );
-      app.use(router.routes());
-      app.use(router.allowedMethods());
+      try {
+        app.use(router.routes());
+        app.use(router.allowedMethods());
+      } catch (error) {
+        console.error("仅tsc打包时会出现，不影响项目");
+      }
     }
   });
 };

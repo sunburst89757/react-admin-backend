@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
-    "sourceMap": true,
+    // 前两个属性解决node中使用ts
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "target": "ES2016",
+    "moduleResolution": "node",
+    "sourceMap": false,
     "outDir": "dist",
     "strict": true,
-    "lib": ["esnext"],
-    "esModuleInterop": true
+    "lib": ["esnext"]
   }
 }

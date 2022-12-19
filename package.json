@@ -10,7 +10,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "start": "nodemon ./src/index.ts",
-    "build": "rm -rf dist/* && tsc && node dist/index.js",
+    "build": "rm -rf dist/* && tsc",
     "db": "prisma migrate dev --name init",
     "generate": "prisma generate",
     "postinstall": "patch-package",

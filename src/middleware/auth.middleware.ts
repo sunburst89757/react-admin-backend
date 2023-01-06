@@ -11,7 +11,12 @@ class AuthMiddleware {
     console.log("verify middleware ~");
     const { authorization } = ctx.headers;
     // postman 会加上token前缀
-    const token = authorization!.replace("Bearer ", "");
+    if (!authorization)
+      return ctx.onError({
+        code: HttpStatus.UNAUTHORIZED,
+        message: "请求头无authorization字段",
+      });
+    const token = authorization.replace("Bearer ", "");
     try {
       // 公钥解密
       const res = jwt.verify(token, PUBLIC_KEY, {

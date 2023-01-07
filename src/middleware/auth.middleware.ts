@@ -23,7 +23,10 @@ class AuthMiddleware {
       });
       ctx.userId = Number((res as { userId: string }).userId);
     } catch (error) {
-      console.log(error);
+      if (ctx.path.indexOf("/logout"))
+        return ctx.onSuccess({
+          data: null,
+        });
       return ctx.onError({
         code: HttpStatus.UNAUTHORIZED,
         message: "token失效,请重新登录",

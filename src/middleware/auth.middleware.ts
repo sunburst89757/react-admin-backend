@@ -1,14 +1,13 @@
-import jwt from "jsonwebtoken";
 import { Context, Next } from "koa";
 import { PUBLIC_KEY } from "../app/config";
 import { db } from "../app/dataBase";
 import { HttpStatus } from "../types/httpStatus";
 import { IUserInfo } from "../types/user.type";
 import { md5Password } from "../utils/handlePassword";
+import { jwtr } from "../utils/jwt";
 
 class AuthMiddleware {
   async verifyAuth(ctx: Context, next: Next) {
-    console.log("verify middleware ~");
     const { authorization } = ctx.headers;
     // postman 会加上token前缀
     if (!authorization)
@@ -19,7 +18,7 @@ class AuthMiddleware {
     const token = authorization.replace("Bearer ", "");
     try {
       // 公钥解密
-      const res = jwt.verify(token, PUBLIC_KEY, {
+      const res = await jwtr.verify(token, PUBLIC_KEY, {
         algorithms: ["RS256"],
       });
       ctx.userId = Number((res as { userId: string }).userId);

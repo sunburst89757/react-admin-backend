@@ -3,6 +3,7 @@ import bodyParser from "koa-bodyparser";
 import cors from "koa2-cors";
 import { responseFormat } from "../middleware/response.middleware";
 import { useRoutes } from "../router";
+import "../utils/jwt";
 const app = new Koa();
 app.use(bodyParser());
 app.use(cors());

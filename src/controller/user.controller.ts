@@ -1,10 +1,8 @@
-import jwt from "jsonwebtoken";
 import { Context, Next } from "koa";
 import { PRIVATE_KEY } from "../app/config";
-import { db } from "../app/dataBase";
 import userService from "../service/user.service";
 import { HttpStatus } from "../types/httpStatus";
-import { IUserInfo } from "../types/user.type";
+import { jwtr } from "../utils/jwt";
 class UserController {
   async create(ctx: Context, next: Next) {
     console.log(ctx.request.body);
@@ -16,11 +14,16 @@ class UserController {
   }
   async login(ctx: Context, next: Next) {
     const { userId, username, roleId } = ctx.user;
+
+    const token = await jwtr.sign(
+      { jti: String(userId), userId, username },
+      PRIVATE_KEY,
+      {
+        expiresIn: 60 * 60 * 24,
+        algorithm: "RS256",
+      }
+    );
     //  openSSL 生成的私钥颁发token
-    const token = jwt.sign({ userId, username }, PRIVATE_KEY, {
-      expiresIn: 60 * 60 * 24,
-      algorithm: "RS256",
-    });
     ctx.onSuccess({
       data: {
         userId,
@@ -31,6 +34,8 @@ class UserController {
     });
   }
   async logout(ctx: Context) {
+    const jti = ctx.userId;
+    await jwtr.destroy(String(jti));
     ctx.onSuccess({
       data: null,
     });

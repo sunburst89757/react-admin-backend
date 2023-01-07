@@ -23,7 +23,7 @@ class AuthMiddleware {
       });
       ctx.userId = Number((res as { userId: string }).userId);
     } catch (error) {
-      if (ctx.path.indexOf("/logout"))
+      if (ctx.path.indexOf("/logout") > 0)
         return ctx.onSuccess({
           data: null,
         });

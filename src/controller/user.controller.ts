@@ -68,7 +68,31 @@ class UserController {
       data,
     });
   }
+  async refreshToken(ctx: Context) {
+    const { userId, username } = ctx.query;
+    const token = await jwtr.sign(
+      { jti: String(userId), userId, username },
+      PRIVATE_KEY,
+      {
+        expiresIn: 60 * 60 * 24,
+        algorithm: "RS256",
+      }
+    );
+    //  openSSL 生成的私钥颁发token
+    ctx.onSuccess({
+      data: {
+        token,
+      },
+    });
+  }
 }
 
-export const { create, login, logout, updateUser, deleteUser, getUserList } =
-  new UserController();
+export const {
+  create,
+  login,
+  logout,
+  updateUser,
+  deleteUser,
+  getUserList,
+  refreshToken,
+} = new UserController();

@@ -7,6 +7,7 @@ import {
   login,
   logout,
   updateUser,
+  refreshToken
 } from "../controller/user.controller";
 import {
   encryptPassword,
@@ -21,5 +22,6 @@ userRouter.get("/logout", verifyAuth, logout);
 userRouter.post("/update", verifyAuth, updateUser);
 userRouter.delete("/delete/:id", verifyAuth, deleteUser);
 userRouter.get("/list", verifyAuth, getUserList);
+userRouter.get("/refreshToken",refreshToken);
 
 export default userRouter;

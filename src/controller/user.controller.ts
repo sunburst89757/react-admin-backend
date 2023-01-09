@@ -16,7 +16,7 @@ class UserController {
     const { userId, username, roleId } = ctx.user;
 
     const token = await jwtr.sign(
-      { jti: String(userId), userId, username },
+      { jti: String(userId), userId },
       PRIVATE_KEY,
       {
         expiresIn: 60 * 60 * 24,
@@ -69,9 +69,9 @@ class UserController {
     });
   }
   async refreshToken(ctx: Context) {
-    const { userId, username } = ctx.query;
+    const { userId } = ctx.query;
     const token = await jwtr.sign(
-      { jti: String(userId), userId, username },
+      { jti: String(userId), userId },
       PRIVATE_KEY,
       {
         expiresIn: 60 * 60 * 24,

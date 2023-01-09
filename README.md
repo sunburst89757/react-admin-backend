@@ -1,10 +1,14 @@
 ## react-admin-backend
 
-本项目是[react-ts-admin](https://github.com/sunburst89757/react-ts-admin)的后端项目，使用的模板是[koa-ts-template](https://github.com/sunburst89757/koa-ts-template)的 general 分支
+本项目是[react-ts-admin](https://github.com/sunburst89757/react-admin)的后端项目，使用的模板是[koa-ts-template](https://github.com/sunburst89757/koa-ts-template)的 general 分支
 
 ## 使用须知
 
 [参见](https://github.com/sunburst89757/koa-ts-template/tree/general)Readme。主要设置.env 和 key
+
+## 新增功能
+
+- 使用 redis 进行 token 管理，配套对应的前端项目实现 token 无感刷新
 
 ## 部署须知
 

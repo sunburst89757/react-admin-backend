@@ -1,5 +1,6 @@
 import { Context, Next } from "koa";
-import { PRIVATE_KEY } from "../app/config";
+import { nanoid } from "nanoid";
+import { PRIVATE_KEY, PUBLIC_KEY } from "../app/config";
 import userService from "../service/user.service";
 import { HttpStatus } from "../types/httpStatus";
 import { jwtr } from "../utils/jwt";
@@ -15,11 +16,19 @@ class UserController {
   async login(ctx: Context, next: Next) {
     const { userId, username, roleId } = ctx.user;
 
-    const token = await jwtr.sign(
-      { jti: String(userId), userId },
+    const access_token = await jwtr.sign(
+      { jti: String(userId), userId, username, random: nanoid() },
       PRIVATE_KEY,
       {
         expiresIn: 60 * 60 * 24,
+        algorithm: "RS256",
+      }
+    );
+    const refresh_token = await jwtr.sign(
+      { jti: userId + username, userId, username, random: nanoid() },
+      PRIVATE_KEY,
+      {
+        expiresIn: 7 * 60 * 60 * 24,
         algorithm: "RS256",
       }
     );
@@ -29,13 +38,18 @@ class UserController {
         userId,
         roleId,
         username,
-        token,
+        access_token,
+        refresh_token,
       },
     });
   }
   async logout(ctx: Context) {
-    const jti = ctx.userId;
-    await jwtr.destroy(String(jti));
+    const userId = ctx.userId;
+    const username = ctx.username;
+    // 销毁access_token
+    await jwtr.destroy(String(userId));
+    // 销毁refresh_token
+    await jwtr.destroy(userId + username);
     ctx.onSuccess({
       data: null,
     });
@@ -69,9 +83,13 @@ class UserController {
     });
   }
   async refreshToken(ctx: Context) {
-    const { userId } = ctx.query;
-    const token = await jwtr.sign(
-      { jti: String(userId), userId },
+    const { refresh_token } = ctx.request.body;
+    const { userId, username }: { username: string; userId: number } =
+      await jwtr.verify(refresh_token, PUBLIC_KEY, {
+        algorithms: ["RS256"],
+      });
+    const access_token = await jwtr.sign(
+      { jti: String(userId), userId, username, random: nanoid() },
       PRIVATE_KEY,
       {
         expiresIn: 60 * 60 * 24,
@@ -81,7 +99,7 @@ class UserController {
     //  openSSL 生成的私钥颁发token
     ctx.onSuccess({
       data: {
-        token,
+        access_token,
       },
     });
   }

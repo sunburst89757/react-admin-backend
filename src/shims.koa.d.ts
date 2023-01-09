@@ -16,5 +16,6 @@ declare module "koa" {
     onSuccess: (data: SuccessRes) => void;
     onError: (err: ErrorRes) => void;
     userId: number;
+    username: string;
   }
 }

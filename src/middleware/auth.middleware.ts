@@ -15,13 +15,14 @@ class AuthMiddleware {
         code: HttpStatus.UNAUTHORIZED,
         message: "请求头无authorization字段",
       });
-    const token = authorization.replace("Bearer ", "");
+    const access_token = authorization.replace("Bearer ", "");
     try {
       // 公钥解密
-      const res = await jwtr.verify(token, PUBLIC_KEY, {
+      const res = await jwtr.verify(access_token, PUBLIC_KEY, {
         algorithms: ["RS256"],
       });
       ctx.userId = Number((res as { userId: string }).userId);
+      ctx.username = (res as { username: string }).username;
     } catch (error) {
       if (ctx.path.indexOf("/logout") > 0)
         return ctx.onSuccess({

@@ -75,7 +75,6 @@ class MenuService {
           id,
         },
       });
-      console.log(res, "执行");
       if (res.length === 0) {
         return {
           page,
@@ -117,7 +116,6 @@ class MenuService {
         path,
       },
     });
-    console.log(res?.id);
     return res;
   }
   async updateMenu(menu: Menu) {
@@ -164,7 +162,6 @@ class MenuService {
           parentId: id,
         },
       });
-      console.log(sonMenu, "sonMenu");
       // 必须这么写异步执行完之后才可以
       await this.deleteAllSonMenu(sonMenu);
       await db.menu.deleteMany({

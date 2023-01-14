@@ -66,7 +66,6 @@ class RoleService {
           isValid: true,
         },
       });
-      console.log(res, "是啥");
     } else {
       res = await db.menu.findMany({
         where: {
@@ -87,7 +86,6 @@ class RoleService {
     const sortRes = res
       .filter((menu) => menu.parentId === 0)
       .sort((pre, next) => pre.sort - next.sort);
-    console.log(sortRes, "是啥");
 
     res.forEach((menu) => {
       // parentId = 0的都是一级路由

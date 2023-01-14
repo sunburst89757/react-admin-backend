@@ -3,7 +3,6 @@ import service from "../service/role.service";
 class RoleController {
   async create(ctx: Context) {
     const { roleName, isValid, description } = ctx.request.body;
-    console.log(roleName);
     const res = await service.addRole({
       roleName,
       isValid,

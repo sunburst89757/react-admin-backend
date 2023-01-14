@@ -6,7 +6,6 @@ import { HttpStatus } from "../types/httpStatus";
 import { jwtr } from "../utils/jwt";
 class UserController {
   async create(ctx: Context, next: Next) {
-    console.log(ctx.request.body);
     const res = await userService.createUser(ctx.request.body as any);
     ctx.onSuccess({
       data: res,
@@ -55,7 +54,6 @@ class UserController {
     });
   }
   async updateUser(ctx: Context) {
-    console.log(ctx.request.body);
 
     const data = await userService.updateUser(ctx.request.body as any);
 
@@ -71,7 +69,6 @@ class UserController {
     });
   }
   async getUserList(ctx: Context) {
-    console.log(ctx.query);
     const { username, page, pageSize } = ctx.query;
     const data = await userService.getUserList({
       username,

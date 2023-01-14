@@ -9,5 +9,6 @@
     "outDir": "dist",
     "strict": true,
     "lib": ["esnext"]
-  }
+  },
+  "exclude": ["node_modules"]
 }

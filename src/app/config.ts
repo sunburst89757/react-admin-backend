@@ -10,13 +10,4 @@ export const PUBLIC_KEY = fs.readFileSync(
 );
 //  白名单添加的是角色id
 export const WHITE_LIST = [1];
-export const {
-  APP_HOST,
-  APP_PORT,
-  MYSQL_HOST,
-  MYSQL_PORT,
-  MYSQL_DATABASE,
-  MYSQL_USER,
-  MYSQL_PASSWORD,
-  DATABASE_URL,
-} = process.env;
+export const { APP_HOST, APP_PORT, REDIS_URL } = process.env;

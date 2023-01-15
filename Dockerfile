@@ -16,8 +16,7 @@ COPY tsconfig.json ./
 RUN npm install
 
 COPY . .
-# 拉取数据库 重新生成prisma.schema
-RUN npx prisma db pull
+
 # 根据prisma.schema 生成新的prisma client api(ts支持)
 RUN npx prisma generate
 

@@ -13,14 +13,14 @@ services:
     ports:
       - 3306:3306
     environment: # 指定用户root的密码
-      - MYSQL_ROOT_PASSWORD=root123..
+      - MYSQL_ROOT_PASSWORD=yourpassword
   redis:
     image: redis:6.2.6
     container_name: my-redis
     restart: always
     ports:
       - 6379:6379
-    command: redis-server --save 20 1 --loglevel warning --requirepass root123..
+    command: redis-server --save 20 1 --loglevel warning --requirepass yourpassword
     volumes:
       - /root/redis/cache:/data
   react_admin:

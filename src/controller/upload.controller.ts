@@ -22,24 +22,13 @@ class UploadController {
     }
   }
   async testChunk(ctx: Context, next: Next) {
-    uploader.get(
-      ctx.query,
-      (status, filename, original_filename, identifier) => {
-        if (status == "found") {
-          status = 200;
-          // 断点续传 和 秒传 逻辑待添加
-          ctx.onSuccess({
-            data: {
-              filename,
-              originalFilename: original_filename,
-              identifier,
-            },
-          });
-        } else {
-          ctx.status = 204;
-        }
-      }
-    );
+    const { skip, uploaded } = await uploader.get(ctx.query);
+    ctx.onSuccess({
+      data: {
+        skip,
+        uploaded,
+      },
+    });
   }
   async mergeChunk(ctx: Context, next: Next) {
     const { filename, identifier } = ctx.request.body;

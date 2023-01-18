@@ -91,33 +91,69 @@ export class Uploader {
     return true;
   }
   // 进行秒传和断点续传测试
-  get(query: ParsedUrlQuery, cb: (...args: any[]) => void) {
-    let { chunkNumber, chunkSize, totalSize, identifier, filename } =
-      query as Record<string, string>;
-    console.log(typeof chunkNumber, typeof filename, chunkNumber, filename);
-    //  传递少了变量会catch 报错
-    const isValid = this.validateRequest(
-      parseInt(chunkNumber),
-      parseInt(chunkSize),
-      parseInt(totalSize),
-      identifier,
-      filename
-    );
-    if (isValid) {
-      const chunkFilename = this.getChunkFilename(
+  async get(query: ParsedUrlQuery): Promise<{
+    uploaded: number[];
+    skip: boolean;
+  }> {
+    return new Promise(async (resolve) => {
+      let {
+        chunkNumber,
+        chunkSize,
+        totalSize,
+        identifier,
+        filename,
+        totalChunks,
+      } = query as Record<string, string>;
+      //  传递少了变量会catch 报错
+      const isValid = this.validateRequest(
         parseInt(chunkNumber),
-        identifier
+        parseInt(chunkSize),
+        parseInt(totalSize),
+        identifier,
+        filename
       );
-      const isExist = fs.existsSync(chunkFilename);
-      if (isExist) {
-        // 秒传逻辑 断点续传逻辑
-        cb("found", chunkFilename, filename, identifier);
+      if (isValid) {
+        const chunkFilename = this.getChunkFilename(
+          parseInt(chunkNumber),
+          identifier
+        );
+        const isExist = fs.existsSync(chunkFilename);
+        if (isExist) {
+          // 秒传逻辑 断点续传逻辑
+          const files = (
+            await fs.promises.readdir(this.temporaryFolder)
+          ).filter((name) => {
+            return name.indexOf(identifier) > 0;
+          });
+          // 切片排序
+          files.sort((pre: string, next: string) => {
+            const preIndex = parseInt(pre.slice(pre.lastIndexOf(".") + 1));
+            const nextIndex = parseInt(next.slice(next.lastIndexOf(".") + 1));
+            return preIndex - nextIndex;
+          });
+          // 是否秒传
+          const skip = files.length === parseInt(totalChunks);
+          // 已经上传的切片
+          const uploaded = files.map((file) =>
+            parseInt(file.slice(file.lastIndexOf(".") + 1))
+          );
+          resolve({
+            skip,
+            uploaded,
+          });
+        } else {
+          resolve({
+            uploaded: [],
+            skip: false,
+          });
+        }
       } else {
-        cb("not-found", null, null, null);
+        resolve({
+          uploaded: [],
+          skip: false,
+        });
       }
-    } else {
-      cb("not-found", null, null, null);
-    }
+    });
   }
   // 上传文件
   async post(ctx: Context): Promise<{
@@ -197,62 +233,43 @@ export class Uploader {
       }
     });
   }
-  async write(
-    filename: string,
-    identifier: string
-    // writableStream: fs.WriteStream,
-    // options: Record<string, any> = { end: true }
-  ) {
+  // 文件合并写入文件
+  async write(filename: string, identifier: string) {
     return new Promise(async (resolve) => {
-      const files = (await fs.promises.readdir(this.temporaryFolder)).filter(
-        (name) => {
-          return name.indexOf(identifier) > 0;
+      const exits = fs.existsSync(this.uploadFolder + "/" + filename);
+      // 避免重复写入
+      if (!exits) {
+        const files = (await fs.promises.readdir(this.temporaryFolder)).filter(
+          (name) => {
+            return name.indexOf(identifier) > 0;
+          }
+        );
+        // 切片排序
+        files.sort((pre: string, next: string) => {
+          const preIndex = parseInt(pre.slice(pre.lastIndexOf(".") + 1));
+          const nextIndex = parseInt(next.slice(next.lastIndexOf(".") + 1));
+          return preIndex - nextIndex;
+        });
+        // 切片收集
+        const parts = [];
+        for (const file of files) {
+          const part = await fs.promises.readFile(
+            this.temporaryFolder + "/" + file
+          );
+          parts.push(part);
         }
-      );
-      // 切片排序
-      files.sort((pre: string, next: string) => {
-        const preIndex = parseInt(pre.slice(pre.lastIndexOf(".") + 1));
-        const nextIndex = parseInt(next.slice(next.lastIndexOf(".") + 1));
-        return preIndex - nextIndex;
-      });
-      // 切片收集
-      const parts = [];
-      for (const file of files) {
-        const part = await fs.promises.readFile(
-          this.temporaryFolder + "/" + file
-        );
-        parts.push(part);
+        // 切片写入文件
+        try {
+          await fs.promises.writeFile(
+            this.uploadFolder + "/" + filename,
+            Buffer.concat(parts)
+          );
+          resolve(true);
+        } catch (error) {
+          resolve(false);
+        }
       }
-      // 切片写入文件
-      try {
-        await fs.promises.writeFile(
-          this.uploadFolder + "/" + filename,
-          Buffer.concat(parts)
-        );
-        resolve(true);
-      } catch (error) {
-        resolve(false)
-      }
-      
-      
+      resolve(false);
     });
-    /* const pipeChunk = async (chunkNumber: number) => {
-      const chunkFilename = this.getChunkFilename(chunkNumber, identifier);
-      await fs.access(chunkFilename, (err) => {
-        if (!err) {
-          const sourceStream = fs.createReadStream(chunkFilename);
-          sourceStream.pipe(writableStream, {
-            end: false,
-          });
-          sourceStream.on("end", () => {
-            pipeChunk(chunkNumber + 1);
-          });
-        } else {
-          //  所有切片都处理了
-          if (options?.end) writableStream.end();
-        }
-      });
-    };
-    await pipeChunk(1); */
   }
 }

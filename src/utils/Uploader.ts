@@ -5,18 +5,22 @@ import { resolve } from "path";
 import { ParsedUrlQuery } from "querystring";
 export class Uploader {
   temporaryFolder: string;
+  uploadFolder: string;
   fileParameterName: string;
   maxFileSize?: number;
   constructor(
     temporaryFolder: string,
+    uploadFolder: string,
     fileParameterName = "file",
     maxFileSize?: number
   ) {
+    this.uploadFolder = uploadFolder;
     this.temporaryFolder = temporaryFolder;
     this.maxFileSize = maxFileSize;
     this.fileParameterName = fileParameterName;
     try {
       fs.mkdirSync(temporaryFolder);
+      fs.mkdirSync(uploadFolder);
     } catch (e) {}
   }
   private cleanIdentifier(identifier: string) {
@@ -194,11 +198,45 @@ export class Uploader {
     });
   }
   async write(
-    identifier: string,
-    writableStream: fs.WriteStream,
-    options: Record<string, any> = { end: true }
+    filename: string,
+    identifier: string
+    // writableStream: fs.WriteStream,
+    // options: Record<string, any> = { end: true }
   ) {
-    const pipeChunk = async (chunkNumber: number) => {
+    return new Promise(async (resolve) => {
+      const files = (await fs.promises.readdir(this.temporaryFolder)).filter(
+        (name) => {
+          return name.indexOf(identifier) > 0;
+        }
+      );
+      // 切片排序
+      files.sort((pre: string, next: string) => {
+        const preIndex = parseInt(pre.slice(pre.lastIndexOf(".") + 1));
+        const nextIndex = parseInt(next.slice(next.lastIndexOf(".") + 1));
+        return preIndex - nextIndex;
+      });
+      // 切片收集
+      const parts = [];
+      for (const file of files) {
+        const part = await fs.promises.readFile(
+          this.temporaryFolder + "/" + file
+        );
+        parts.push(part);
+      }
+      // 切片写入文件
+      try {
+        await fs.promises.writeFile(
+          this.uploadFolder + "/" + filename,
+          Buffer.concat(parts)
+        );
+        resolve(true);
+      } catch (error) {
+        resolve(false)
+      }
+      
+      
+    });
+    /* const pipeChunk = async (chunkNumber: number) => {
       const chunkFilename = this.getChunkFilename(chunkNumber, identifier);
       await fs.access(chunkFilename, (err) => {
         if (!err) {
@@ -215,6 +253,6 @@ export class Uploader {
         }
       });
     };
-    await pipeChunk(1);
+    await pipeChunk(1); */
   }
 }

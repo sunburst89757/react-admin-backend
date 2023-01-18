@@ -1,15 +1,16 @@
 import { Context, Next } from "koa";
 import { Uploader } from "../utils/Uploader";
 import { resolve } from "path";
-import fs from "fs";
-const uploader = new Uploader(resolve(__dirname, "../../temp"));
+const uploader = new Uploader(
+  resolve(__dirname, "../../temp"),
+  resolve(__dirname, "../../uploads")
+);
 class UploadController {
   async uploadChunk(ctx: Context, next: Next) {
-    // console.log(ctx.files, "files \n");
     const { status, filename, originalFilename, identifier } =
       await uploader.post(ctx);
     if (status === "done") {
-      ctx.onSuccess({
+      return ctx.onSuccess({
         data: {
           filename,
           originalFilename,
@@ -41,13 +42,14 @@ class UploadController {
     );
   }
   async mergeChunk(ctx: Context, next: Next) {
-    // 合并逻辑
-    /*  const path = resolve(__dirname, `../../uploads/${filename}`);
-    const s = fs.createWriteStream(path);
-    s.on("finish", () => {});
-    await uploader.write(identifier, s, { end: true }); */
+    const { filename, identifier } = ctx.request.body;
+    await uploader.write(filename, identifier);
     ctx.onSuccess({
-      data: "merge success",
+      data: {
+        filename,
+        identifier,
+      },
+      message: "merge success",
     });
   }
   async download(ctx: Context, next: Next) {

@@ -21,6 +21,7 @@ model User {
   // 一对多做映射使用 不在数据库生成 
   role      Role     @relation(fields: [roleId], references: [id])
   roleId    Int @default(2)
+  file File[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -60,4 +61,13 @@ model RoleOnMenu {
   updatedAt DateTime @updatedAt
   // 双主键
   @@id([roleId,menuId])
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  identifier Int     @unique
+  filename  String
+  user User @relation(fields: [uploadBy],references: [id])
+  uploadBy Int 
+  createdAt DateTime @default(now())
 }

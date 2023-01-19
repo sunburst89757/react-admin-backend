@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `menu` ADD COLUMN `isValid` BOOLEAN NOT NULL DEFAULT true;

@@ -33,10 +33,15 @@ class UploadController {
     });
   }
   async mergeChunk(ctx: Context, next: Next) {
-    const { filename, identifier, uploadBy } = ctx.request.body;
+    const { filename, identifier, uploadBy, size } = ctx.request.body;
     try {
       await uploader.write(filename, identifier);
-      await uploadService.addFile();
+      await uploadService.addFile({
+        filename,
+        identifier,
+        uploadBy,
+        size,
+      });
       ctx.onSuccess({
         data: {
           filename,

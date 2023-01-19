@@ -15,5 +15,5 @@ const multerMidderWare = multer().any();
 uploadRouter.post("/uploadChunk", multerMidderWare, uploadChunk);
 uploadRouter.get("/uploadChunk", testChunk);
 uploadRouter.post("/merge", mergeChunk);
-uploadRouter.get("/download/:identifier", download);
+uploadRouter.get("/download/:filename", download);
 export default uploadRouter;

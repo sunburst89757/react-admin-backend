@@ -1,6 +1,7 @@
 import { Context, Next } from "koa";
 import { Uploader } from "../utils/Uploader";
 import { resolve } from "path";
+import send from "koa-send";
 const uploader = new Uploader(
   resolve(__dirname, "../../temp"),
   resolve(__dirname, "../../uploads")
@@ -42,8 +43,15 @@ class UploadController {
     });
   }
   async download(ctx: Context, next: Next) {
-    const { identifier } = ctx.params;
+    const { filename } = ctx.params;
     // uploader.write(identifier);
+    try {
+      await send(ctx, filename, {
+        root: resolve(__dirname, "../../uploads"),
+      });
+    } catch (error) {
+      console.log("download file error:", error);
+    }
   }
 }
 

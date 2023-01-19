@@ -1,6 +1,7 @@
 import { Context, Next } from "koa";
 import { Uploader } from "../utils/Uploader";
 import { resolve } from "path";
+import uploadService from "../service/upload.service";
 import send from "koa-send";
 const uploader = new Uploader(
   resolve(__dirname, "../../temp"),
@@ -32,15 +33,18 @@ class UploadController {
     });
   }
   async mergeChunk(ctx: Context, next: Next) {
-    const { filename, identifier } = ctx.request.body;
-    await uploader.write(filename, identifier);
-    ctx.onSuccess({
-      data: {
-        filename,
-        identifier,
-      },
-      message: "merge success",
-    });
+    const { filename, identifier, uploadBy } = ctx.request.body;
+    try {
+      await uploader.write(filename, identifier);
+      await uploadService.addFile();
+      ctx.onSuccess({
+        data: {
+          filename,
+          identifier,
+        },
+        message: "merge success",
+      });
+    } catch (error) {}
   }
   async download(ctx: Context, next: Next) {
     const { filename } = ctx.params;

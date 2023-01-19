@@ -49,6 +49,8 @@ class UploadController {
         },
         message: "merge success",
       });
+      // 删除所有的切片
+      uploader.removeAllChunks(identifier);
     } catch (error) {}
   }
   async download(ctx: Context, next: Next) {

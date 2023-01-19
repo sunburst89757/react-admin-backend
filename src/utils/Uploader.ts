@@ -3,6 +3,7 @@ import fs from "fs";
 import { Context } from "koa";
 import { resolve } from "path";
 import { ParsedUrlQuery } from "querystring";
+import uploadService from "../service/upload.service";
 export class Uploader {
   temporaryFolder: string;
   uploadFolder: string;
@@ -28,8 +29,12 @@ export class Uploader {
   }
   private getChunkFilename(chunkNumber: number, identifier: string) {
     const realIdentifier = this.cleanIdentifier(identifier);
+    const chunkFolder = resolve(this.temporaryFolder, realIdentifier);
+    try {
+      fs.mkdirSync(this.temporaryFolder + "/" + realIdentifier);
+    } catch (error) {}
     return resolve(
-      this.temporaryFolder,
+      chunkFolder,
       "./uploader-" + realIdentifier + "." + chunkNumber
     );
   }
@@ -90,6 +95,14 @@ export class Uploader {
 
     return true;
   }
+  private async getAllChunkPath(identifier: string) {
+    const files = (await fs.promises.readdir(this.temporaryFolder)).filter(
+      (name) => {
+        return name.indexOf(identifier) > 0;
+      }
+    );
+    return files.map((file) => this.temporaryFolder + "/" + file);
+  }
   // 进行秒传和断点续传测试
   async get(query: ParsedUrlQuery): Promise<{
     uploaded: number[];
@@ -113,39 +126,47 @@ export class Uploader {
         filename
       );
       if (isValid) {
-        const chunkFilename = this.getChunkFilename(
-          parseInt(chunkNumber),
-          identifier
-        );
-        const isExist = fs.existsSync(chunkFilename);
-        if (isExist) {
-          // 秒传逻辑 断点续传逻辑
-          const files = (
-            await fs.promises.readdir(this.temporaryFolder)
-          ).filter((name) => {
-            return name.indexOf(identifier) > 0;
-          });
-          // 切片排序
-          files.sort((pre: string, next: string) => {
-            const preIndex = parseInt(pre.slice(pre.lastIndexOf(".") + 1));
-            const nextIndex = parseInt(next.slice(next.lastIndexOf(".") + 1));
-            return preIndex - nextIndex;
-          });
-          // 是否秒传
-          const skip = files.length === parseInt(totalChunks);
-          // 已经上传的切片
-          const uploaded = files.map((file) =>
-            parseInt(file.slice(file.lastIndexOf(".") + 1))
-          );
+        // 秒传验证
+        const res = await uploadService.queryFile(identifier);
+        if (res) {
           resolve({
-            skip,
-            uploaded,
+            skip: true,
+            uploaded: [],
           });
         } else {
-          resolve({
-            uploaded: [],
-            skip: false,
-          });
+          // 断点续传
+          const chunkFilename = this.getChunkFilename(
+            parseInt(chunkNumber),
+            identifier
+          );
+          const isExist = fs.existsSync(chunkFilename);
+          if (isExist) {
+            // 断点续传逻辑
+            const files = (
+              await fs.promises.readdir(this.temporaryFolder + "/" + identifier)
+            ).filter((name) => {
+              return name.indexOf(identifier) > 0;
+            });
+            // 切片排序
+            files.sort((pre: string, next: string) => {
+              const preIndex = parseInt(pre.slice(pre.lastIndexOf(".") + 1));
+              const nextIndex = parseInt(next.slice(next.lastIndexOf(".") + 1));
+              return preIndex - nextIndex;
+            });
+            // 已经上传的切片
+            const uploaded = files.map((file) =>
+              parseInt(file.slice(file.lastIndexOf(".") + 1))
+            );
+            resolve({
+              skip: false,
+              uploaded,
+            });
+          } else {
+            resolve({
+              uploaded: [],
+              skip: false,
+            });
+          }
         }
       } else {
         resolve({
@@ -222,7 +243,6 @@ export class Uploader {
             identifier,
           });
         }
-        //  保存切片
       } else {
         resolve({
           status: "请求参数验证失败",
@@ -270,6 +290,12 @@ export class Uploader {
         }
       }
       resolve(false);
+    });
+  }
+  removeAllChunks(identifier: string) {
+    fs.rmSync(this.temporaryFolder + "/" + identifier, {
+      recursive: true,
+      force: true,
     });
   }
 }

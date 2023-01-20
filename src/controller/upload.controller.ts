@@ -2,7 +2,6 @@ import { Context, Next } from "koa";
 import { Uploader } from "../utils/Uploader";
 import { resolve } from "path";
 import uploadService from "../service/upload.service";
-import send from "koa-send";
 const uploader = new Uploader(
   resolve(__dirname, "../../temp"),
   resolve(__dirname, "../../uploads")
@@ -55,18 +54,6 @@ class UploadController {
       uploader.removeAllChunks(identifier);
     } catch (error) {}
   }
-  async download(ctx: Context, next: Next) {
-    const { filename } = ctx.params;
-    // uploader.write(identifier);
-    try {
-      await send(ctx, filename, {
-        root: resolve(__dirname, "../../uploads"),
-      });
-    } catch (error) {
-      console.log("download file error:", error);
-    }
-  }
 }
 
-export const { uploadChunk, testChunk, mergeChunk, download } =
-  new UploadController();
+export const { uploadChunk, testChunk, mergeChunk } = new UploadController();

@@ -19,7 +19,7 @@ class UploadService {
       });
     }
   }
-  async queryFile(identifier: string) {
+  async testFastPass(identifier: string) {
     const res = await db.file.findUnique({
       where: {
         identifier,

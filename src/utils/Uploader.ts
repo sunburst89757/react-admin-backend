@@ -54,7 +54,7 @@ export class Uploader {
     return new Promise(async (resolve) => {
       let { chunkNumber, identifier } = query as Record<string, string>;
       // 秒传验证
-      const res = await uploadService.queryFile(identifier);
+      const res = await uploadService.testFastPass(identifier);
       if (res) {
         resolve({
           skip: true,

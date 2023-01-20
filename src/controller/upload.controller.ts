@@ -46,6 +46,8 @@ class UploadController {
         data: {
           filename,
           identifier,
+          uploadBy,
+          size,
         },
         message: "merge success",
       });

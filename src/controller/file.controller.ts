@@ -1,6 +1,6 @@
 import fs from "fs";
 import { Context } from "koa";
-import send from "koa-send";
+import mine from "mime-types";
 import path from "path";
 import service from "../service/file.service";
 class FileController {
@@ -17,12 +17,13 @@ class FileController {
   }
   async download(ctx: Context) {
     const { filename } = ctx.query;
-    try {
-      await send(ctx, filename as string, {
-        root: path.resolve(__dirname, "../../uploads"),
-      });
-    } catch (error) {
-      console.log("download file error:", error);
+    const filePath = path.resolve(__dirname, `../../uploads/${filename}`);
+    const mimeType = mine.lookup(filePath);
+    if (mimeType) {
+      const src = fs.createReadStream(filePath);
+      ctx.response.set("content-type", mimeType);
+      ctx.attachment(filename as string);
+      ctx.body = src;
     }
   }
   async deleteFile(ctx: Context) {

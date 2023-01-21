@@ -16,7 +16,7 @@ class FileController {
     });
   }
   async download(ctx: Context) {
-    const { filename } = ctx.query;
+    const { filename } = ctx.request.body;
     const filePath = path.resolve(__dirname, `../../uploads/${filename}`);
     const mimeType = mine.lookup(filePath);
     if (mimeType) {

@@ -26,6 +26,9 @@ class FileService {
             },
           },
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       }),
       db.file.count({
         where: {

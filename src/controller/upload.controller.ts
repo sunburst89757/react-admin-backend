@@ -2,7 +2,7 @@ import { Context, Next } from "koa";
 import { Uploader } from "../utils/Uploader";
 import { resolve } from "path";
 import uploadService from "../service/upload.service";
-const uploader = new Uploader(
+export const uploader = new Uploader(
   resolve(__dirname, "../../temp"),
   resolve(__dirname, "../../uploads")
 );

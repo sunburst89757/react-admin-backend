@@ -175,10 +175,16 @@ export class Uploader {
       resolve(true);
     });
   }
-  removeAllChunks(identifier: string) {
+  async removeAllChunks(identifier?: string) {
     fs.rmSync(this.temporaryFolder + "/" + identifier, {
       recursive: true,
       force: true,
     });
+    // 不传递identifier 删除所有temp文件下的chunk
+    if (!identifier) {
+      try {
+        fs.mkdirSync(this.temporaryFolder);
+      } catch (error) {}
+    }
   }
 }

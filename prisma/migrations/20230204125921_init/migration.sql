@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE `Button` MODIFY `upload` BOOLEAN NOT NULL DEFAULT false,
+    MODIFY `download` BOOLEAN NOT NULL DEFAULT false,
+    MODIFY `review` BOOLEAN NOT NULL DEFAULT false,
+    MODIFY `submit` BOOLEAN NOT NULL DEFAULT false,
+    MODIFY `audit` BOOLEAN NOT NULL DEFAULT false;

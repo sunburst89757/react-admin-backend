@@ -84,11 +84,11 @@ model Button {
   add     Boolean @default(true)
   delete  Boolean @default(true)
   edit  Boolean @default(true)
-  upload  Boolean @default(true)
-  download  Boolean @default(true)
-  review  Boolean @default(true)
-  submit  Boolean @default(true)
-  audit  Boolean @default(true)
+  upload  Boolean @default(false)
+  download  Boolean @default(false)
+  review  Boolean @default(false)
+  submit  Boolean @default(false)
+  audit  Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

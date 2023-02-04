@@ -36,6 +36,7 @@ model Role {
   // 一对多做映射使用 不在数据库生成
   user      User[]
   menus  RoleOnMenu[]
+  buttons  Button[]
 }
 model Menu {
   id        Int      @id @default(autoincrement())
@@ -71,4 +72,23 @@ model File {
   user User @relation(fields: [uploadBy],references: [id])
   uploadBy Int 
   createdAt DateTime @default(now())
+}
+
+model Button {
+  // role Role @relation(fields: [roleId],references: [id])
+  id        Int      @id @default(autoincrement())
+  // 一对多做映射使用 不在数据库生成 
+  role Role @relation(fields: [roleId], references: [id])
+  roleId Int
+  pathname  String
+  add     Boolean @default(true)
+  delete  Boolean @default(true)
+  edit  Boolean @default(true)
+  upload  Boolean @default(true)
+  download  Boolean @default(true)
+  review  Boolean @default(true)
+  submit  Boolean @default(true)
+  audit  Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
